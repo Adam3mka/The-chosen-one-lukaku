@@ -1,0 +1,5 @@
+local user_premium__001 = game.Players:FindFirstChild("adam1102928181")
+local user_premium__002 = game.Players:FindFirstChild("adamkilll8")
+local user_premium__003 = game.Players:FindFirstChild("gakkms3")
+local user_premium__004 = game.Players:FindFirstChild("iskotlik")
+local player = game.Players.LocalPlayer
